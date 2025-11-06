@@ -48,6 +48,230 @@ apiClient.interceptors.response.use(
 export default apiClient;
 ```
 
+## Notes API Endpoints (Implemented ✅)
+
+### Overview
+Simple CRUD API for managing notes with in-memory storage. Fully tested with 38 unit and integration tests.
+
+**Base URL:** `/api/v1/notes`
+
+**Status:** ✅ Production-ready
+- 38 tests passing
+- 85.91% code coverage
+- Complete documentation available
+
+---
+
+### Create Note
+```
+POST /api/v1/notes
+```
+
+**Request Body:**
+```json
+{
+  "title": "My Note Title",
+  "content": "Note content here"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Note created successfully",
+  "data": {
+    "id": 1,
+    "title": "My Note Title",
+    "content": "Note content here",
+    "createdAt": "2025-11-06T12:55:33.994Z",
+    "updatedAt": "2025-11-06T12:55:33.995Z"
+  }
+}
+```
+
+**Validation:**
+- `title` (required, string)
+- `content` (required, string)
+
+**Errors:**
+- `400` - Missing title or content
+
+---
+
+### Get All Notes
+```
+GET /api/v1/notes
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "count": 2,
+  "data": [
+    {
+      "id": 1,
+      "title": "First Note",
+      "content": "Content here",
+      "createdAt": "2025-11-06T12:55:33.994Z",
+      "updatedAt": "2025-11-06T12:55:33.995Z"
+    },
+    {
+      "id": 2,
+      "title": "Second Note",
+      "content": "More content",
+      "createdAt": "2025-11-06T12:55:44.749Z",
+      "updatedAt": "2025-11-06T12:55:44.749Z"
+    }
+  ]
+}
+```
+
+---
+
+### Get Note by ID
+```
+GET /api/v1/notes/:id
+```
+
+**URL Parameters:**
+- `id` (required, integer) - Note ID
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "First Note",
+    "content": "Content here",
+    "createdAt": "2025-11-06T12:55:33.994Z",
+    "updatedAt": "2025-11-06T12:55:33.995Z"
+  }
+}
+```
+
+**Errors:**
+- `404` - Note not found
+
+---
+
+### Update Note
+```
+PUT /api/v1/notes/:id
+```
+
+**URL Parameters:**
+- `id` (required, integer) - Note ID
+
+**Request Body (partial updates supported):**
+```json
+{
+  "title": "Updated Title",
+  "content": "Updated content"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Note updated successfully",
+  "data": {
+    "id": 1,
+    "title": "Updated Title",
+    "content": "Updated content",
+    "createdAt": "2025-11-06T12:55:33.994Z",
+    "updatedAt": "2025-11-06T12:56:38.758Z"
+  }
+}
+```
+
+**Features:**
+- Supports partial updates (update only title or only content)
+- Automatically updates `updatedAt` timestamp
+- Preserves `createdAt` timestamp
+
+**Errors:**
+- `404` - Note not found
+
+---
+
+### Delete Note
+```
+DELETE /api/v1/notes/:id
+```
+
+**URL Parameters:**
+- `id` (required, integer) - Note ID
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Note deleted successfully",
+  "data": {
+    "id": 1,
+    "title": "Deleted Note",
+    "content": "This was deleted",
+    "createdAt": "2025-11-06T12:55:33.994Z",
+    "updatedAt": "2025-11-06T12:55:33.995Z"
+  }
+}
+```
+
+**Errors:**
+- `404` - Note not found
+
+---
+
+### Notes API Testing
+
+**Test Coverage:**
+- 38 tests (14 unit + 24 integration)
+- 85.91% code coverage
+- All CRUD operations tested
+- Edge cases covered (empty strings, long content, special characters)
+- Full integration flow tested
+
+**Test Documentation:** See [NOTES_API_TESTS.md](./NOTES_API_TESTS.md)
+
+**Example Frontend Usage:**
+```javascript
+import axios from 'axios';
+
+const API_URL = 'http://localhost:4000/api/v1/notes';
+
+// Create note
+const createNote = async (title, content) => {
+  const response = await axios.post(API_URL, { title, content });
+  return response.data;
+};
+
+// Get all notes
+const getAllNotes = async () => {
+  const response = await axios.get(API_URL);
+  return response.data;
+};
+
+// Update note
+const updateNote = async (id, title, content) => {
+  const response = await axios.put(`${API_URL}/${id}`, { title, content });
+  return response.data;
+};
+
+// Delete note
+const deleteNote = async (id) => {
+  const response = await axios.delete(`${API_URL}/${id}`);
+  return response.data;
+};
+```
+
+**Frontend Page:** Available at `http://localhost:3000/notes`
+
+---
+
 ## Authentication Endpoints
 
 ### Register User
