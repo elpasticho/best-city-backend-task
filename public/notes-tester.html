@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            padding: 15px;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            font-weight: 500;
+        }
+
+        .api-section {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .api-section h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 3px;
+            margin: -15px -15px 10px -15px;
+        }
+
+        .api-section h2.post-method {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-bottom: 2px solid #c8e6c9;
+        }
+
+        .api-section h2.get-method {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-bottom: 2px solid #bbdefb;
+        }
+
+        .api-section h2.put-method {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-bottom: 2px solid #ffe0b2;
+        }
+
+        .api-section h2.delete-method {
+            background: #ffebee;
+            color: #c62828;
+            border-bottom: 2px solid #ffcdd2;
+        }
+
+        .endpoint-info {
+            background: #fff;
+            padding: 6px 10px;
+            border-radius: 3px;
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            border: 1px solid #e0e0e0;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 500;
+            margin-right: 8px;
+            font-size: 0.85em;
+        }
+
+        .method.post { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .method.get { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+        .method.put { background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+        .method.delete { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 400;
+            color: #555;
+            font-size: 0.8em;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.85em;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #999;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        button {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 6px 16px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .response-area {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .response-area h2 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        #responseOutput {
+            background: #fff;
+            color: #333;
+            padding: 12px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 80px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+        }
+
+        .success {
+            color: #2e7d32;
+        }
+
+        .error {
+            color: #c62828;
+        }
+
+        .notes-list {
+            margin-top: 12px;
+        }
+
+        .note-item {
+            background: #fff;
+            padding: 10px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+            border-left: 3px solid #bbb;
+        }
+
+        .note-item h3 {
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .note-item p {
+            color: #666;
+            margin-bottom: 6px;
+            font-size: 0.85em;
+        }
+
+        .note-meta {
+            font-size: 0.7em;
+            color: #999;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Notes API Tester</h1>
+
+        <div class="grid">
+            <!-- Create Note -->
+            <div class="api-section">
+                <h2 class="post-method">1. Create Note</h2>
+                <div class="endpoint-info">
+                    <span class="method post">POST</span>
+                    <span>/api/v1/notes</span>
+                </div>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="createTitle">Title *</label>
+                        <input type="text" id="createTitle" placeholder="Enter note title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="createContent">Content *</label>
+                        <textarea id="createContent" placeholder="Enter note content" required></textarea>
+                    </div>
+                    <button type="submit">Create Note</button>
+                </form>
+            </div>
+
+            <!-- Get All Notes -->
+            <div class="api-section">
+                <h2 class="get-method">2. Get All Notes</h2>
+                <div class="endpoint-info">
+                    <span class="method get">GET</span>
+                    <span>/api/v1/notes</span>
+                </div>
+                <button onclick="getAllNotes()">Get All Notes</button>
+                <div class="notes-list" id="notesList"></div>
+            </div>
+
+            <!-- Get Note by ID -->
+            <div class="api-section">
+                <h2 class="get-method">3. Get Note by ID</h2>
+                <div class="endpoint-info">
+                    <span class="method get">GET</span>
+                    <span>/api/v1/notes/:id</span>
+                </div>
+                <form id="getByIdForm">
+                    <div class="form-group">
+                        <label for="getNoteId">Note ID *</label>
+                        <input type="number" id="getNoteId" placeholder="Enter note ID" required>
+                    </div>
+                    <button type="submit">Get Note</button>
+                </form>
+            </div>
+
+            <!-- Update Note -->
+            <div class="api-section">
+                <h2 class="put-method">4. Update Note</h2>
+                <div class="endpoint-info">
+                    <span class="method put">PUT</span>
+                    <span>/api/v1/notes/:id</span>
+                </div>
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label for="updateNoteId">Note ID *</label>
+                        <input type="number" id="updateNoteId" placeholder="Enter note ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateTitle">New Title</label>
+                        <input type="text" id="updateTitle" placeholder="Enter new title (optional)">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateContent">New Content</label>
+                        <textarea id="updateContent" placeholder="Enter new content (optional)"></textarea>
+                    </div>
+                    <button type="submit">Update Note</button>
+                </form>
+            </div>
+
+            <!-- Delete Note -->
+            <div class="api-section">
+                <h2 class="delete-method">5. Delete Note</h2>
+                <div class="endpoint-info">
+                    <span class="method delete">DELETE</span>
+                    <span>/api/v1/notes/:id</span>
+                </div>
+                <form id="deleteForm">
+                    <div class="form-group">
+                        <label for="deleteNoteId">Note ID *</label>
+                        <input type="number" id="deleteNoteId" placeholder="Enter note ID" required>
+                    </div>
+                    <button type="submit" style="background: #ffebee; color: #c62828; border-color: #ffcdd2;">Delete Note</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Response Area -->
+        <div class="response-area">
+            <h2>API Response</h2>
+            <div id="responseOutput">Waiting for API call...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:4000/api/v1';
+
+        function displayResponse(data, isError = false) {
+            const output = document.getElementById('responseOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const statusClass = isError ? 'error' : 'success';
+
+            output.innerHTML = `
+<span class="${statusClass}">[${timestamp}] ${isError ? 'ERROR' : 'SUCCESS'}</span>
+
+${JSON.stringify(data, null, 2)}
+            `;
+        }
+
+        function displayNotesList(notes) {
+            const notesList = document.getElementById('notesList');
+
+            if (!notes || notes.length === 0) {
+                notesList.innerHTML = '<p style="color: #999; margin-top: 15px;">No notes found</p>';
+                return;
+            }
+
+            notesList.innerHTML = notes.map(note => `
+                <div class="note-item">
+                    <h3>${note.title}</h3>
+                    <p>${note.content}</p>
+                    <div class="note-meta">
+                        ID: ${note.id} | Created: ${new Date(note.createdAt).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Create Note
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('createTitle').value;
+            const content = document.getElementById('createContent').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                const data = await response.json();
+                displayResponse(data, !response.ok);
+
+                if (response.ok) {
+                    document.getElementById('createForm').reset();
+                    getAllNotes();
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        });
+
+        // Get All Notes
+        async function getAllNotes() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes`);
+                const data = await response.json();
+
+                displayResponse(data, !response.ok);
+
+                if (response.ok && data.data) {
+                    displayNotesList(data.data);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        }
+
+        // Get Note by ID
+        document.getElementById('getByIdForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('getNoteId').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes/${id}`);
+                const data = await response.json();
+
+                displayResponse(data, !response.ok);
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        });
+
+        // Update Note
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('updateNoteId').value;
+            const title = document.getElementById('updateTitle').value;
+            const content = document.getElementById('updateContent').value;
+
+            const updateData = {};
+            if (title) updateData.title = title;
+            if (content) updateData.content = content;
+
+            if (Object.keys(updateData).length === 0) {
+                displayResponse({ error: 'Please provide at least title or content to update' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const data = await response.json();
+                displayResponse(data, !response.ok);
+
+                if (response.ok) {
+                    document.getElementById('updateForm').reset();
+                    getAllNotes();
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        });
+
+        // Delete Note
+        document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('deleteNoteId').value;
+
+            if (!confirm(`Are you sure you want to delete note ${id}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                displayResponse(data, !response.ok);
+
+                if (response.ok) {
+                    document.getElementById('deleteForm').reset();
+                    getAllNotes();
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, true);
+            }
+        });
+
+        // Load all notes on page load
+        window.addEventListener('load', () => {
+            getAllNotes();
+        });
+    </script>
+</body>
+</html>
